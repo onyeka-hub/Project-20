@@ -33,4 +33,4 @@ The core db , the apparel container will be connected to the core network networ
 We have completed our biggest multi-container application yet, adding private networking to the set up as well. We just added the frontend php container, as well as a system of privilege for our services based on what network they attached to. This allows us to make sure the frontend site container that we want to expose to the public does not have a way to connect to our core services. After all, with a way for the public to access the core, who knows what dangerous scripts and behavior they could send to our central systems.
 
 Here’s the completed project code. 
-https://github.com/onyeka-hub/Project-20.git
+https://github.com/onyeka-hub/Project-20/tree/main/docker-practice
