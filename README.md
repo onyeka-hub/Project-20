@@ -90,11 +90,7 @@ We can either connect directly to the container running the MySQL server or use 
 Connecting directly to the container running the MySQL server:
 
 ```
-$ docker exec -it mysql bash
-
-or
-
-$ docker exec -it onyi-mysql-server mysql -uroot -p
+docker exec -it onyi-mysql-server mysql -uroot -p
 ```
 
 Provide the root password when prompted. With that, you’ve connected the MySQL client to the server.
@@ -103,12 +99,13 @@ Finally, change the server root password to protect your database. Exit the the 
 
 Flags used
 
-- **exec** used to execute a command from bash itself
-- **-it** makes the execution interactive and allocate a pseudo-TTY
-- **bash** this is a unix shell and its used as an entry-point to interact with our container
-- **mysql** The "mysql" in the command "docker exec -it mysql-server mysql -uroot -p" serves as the entry point to interact with mysql container just like bash or sh
-- **-u** mysql username
-- **-p** mysql password
+- **exec** - used to execute a command from bash itself
+- **-it** - makes the execution interactive and allocate a pseudo-TTY
+- **mysql** - The "mysql" in the command "docker exec -it mysql-server mysql -uroot -p" serves as the entry point to interact with mysql container just like bash or sh
+- **-u** - mysql username
+- **-p** - mysql password
+
+![inside mysql server](./images/inside-mysql-server.PNG)
 
 #### Approach 2
 
@@ -141,7 +138,7 @@ docker rmi mysql/mysql-server:latest
 #### First, create a network:
  
 ```
- $ docker network create --subnet=172.18.0.0/24 tooling_app_network 
+docker network create --subnet=172.18.0.0/24 tooling_app_network 
 ```
 
 Creating a custom network is not necessary because even if we do not create a network, Docker will use the default network for all the containers you run. By default, the network we created above is of DRIVER Bridge. So, also, it is the default network. You can verify this by running the "docker network ls" command.
@@ -157,7 +154,7 @@ Run the MySQL Server container using the created network.
 First, let us create an environment variable to store the root password:
 
 ```
- $ export MYSQL_PW=12345678
+export MYSQL_PW=12345678
 ```
 
 verify the environment variable is created
@@ -169,7 +166,7 @@ echo $MYSQL_PW
 Then, pull the image and run the container, all in one command like below:
 
 ```
- $ docker run --network tooling_app_network -h mysqlserverhost --name=onyi-mysql-server -e MYSQL_ROOT_PASSWORD=12345678  -d mysql/mysql-server:latest 
+docker run --network tooling_app_network -h mysqlserverhost --name=onyi-mysql-server -e MYSQL_ROOT_PASSWORD=12345678  -d mysql/mysql-server:latest 
 ```
 
 Flags used
@@ -183,20 +180,20 @@ If the image is not found locally, it will be downloaded from the docker registr
 Verify the container is running:
 
 ```
- $ docker ps -a 
+docker ps -a 
 ```
 
-![container running](./images/container-network.PNG)
+![container running](./images/docker-container.PNG)
 
+![mysql image](./images/mysql-image.PNG)
 
 As you already know, it is best practice not to connect to the MySQL server remotely using the root user. Therefore, we will create an SQL script that will create a user we can use to connect remotely.
 
 Create a file and name it **create_user.sql** and add the below code in the file:
 
 ```
- CREATE USER 'onyeka'@'%' IDENTIFIED WITH mysql_native_password BY 'onyeka';
+CREATE USER 'onyeka'@'%' IDENTIFIED WITH mysql_native_password BY 'onyeka';
 GRANT ALL PRIVILEGES ON * . * TO 'onyeka'@'%';
-use toolingdb;
 FLUSH PRIVILEGES;
 ```
 
@@ -204,7 +201,7 @@ Run the script:
 Ensure you are in the directory create_user.sql file is located or declare a path
 
 ```
- $ docker exec -i onyi-mysql-server mysql -uroot -p12345678 < create_user.sql 
+docker exec -i onyi-mysql-server mysql -uroot -p12345678 < create_user.sql 
 ```
 
 If you see a warning like below, it is acceptable to ignore:
@@ -218,7 +215,7 @@ The good thing about this approach is that you do not have to install any client
 Run the MySQL Client Container:
 
 ```
- $ docker run --network tooling_app_network --name mysql-client -it --rm mysql mysql -h mysqlserverhost -uonyeka -p 
+docker run --network tooling_app_network --name mysql-client -it --rm mysql mysql -h mysqlserverhost -uonyeka -p 
 ```
 
 Flags used:
@@ -240,13 +237,13 @@ Now you need to prepare a database schema so that the Tooling application can co
 
 1. Clone the Tooling-app repository from here
 ```
- $ git clone https://github.com/darey-devops/tooling.git 
+git clone https://github.com/darey-devops/tooling.git 
 ```
 
 2. On your terminal, export the location of the SQL file
 
 ```
- $ export tooling_db_schema=tooling_db_schema.sql 
+export tooling_db_schema=tooling_db_schema.sql 
 ```
 
 You can find the tooling_db_schema.sql in the tooling/html/tooling_db_schema.sql folder of cloned repo.
@@ -254,13 +251,13 @@ You can find the tooling_db_schema.sql in the tooling/html/tooling_db_schema.sql
 Verify that the path is exported
 
 ```
- echo $tooling_db_schema
+echo $tooling_db_schema
 ```
 
 Use the SQL script to create the database and prepare the schema. With the docker exec command, you can execute a command in a running container. Run the below command from the tooling_db_schema.sql directory.
 
 ```
- $ docker exec -i onyi-mysql-server mysql -uroot -p12345678 < tooling_db_schema.sql
+docker exec -i onyi-mysql-server mysql -uroot -p12345678 < tooling_db_schema.sql
 ```
 
 4. Update the .env file with connection details to the database
@@ -314,11 +311,11 @@ In the above command, we specify a parameter -t, so that the image can be tagged
 Run the container:
 
 ```
- $ docker run --name=onyi_tooling --network tooling_app_network -p=8085:80 -it tooling:0.0.1 bash
+docker run --name=onyi_tooling --network tooling_app_network -p=8085:80 -it tooling:0.0.1 bash
 
  OR You can connect to the container with 
 
- docker exec -it onyi_tooling bash
+docker exec -it onyi_tooling bash
 ```
 
 Let us observe those flags in the command.
@@ -344,6 +341,150 @@ apache2ctl start
 
 If everything works, you can open the browser and type http://localhost:8085
 
-$ docker build . -t todo:0.0.1
+![tooling page](./images/tooling-page1.PNG)
 
-$ docker run --name=onyi_todo --network tooling_app_network -p8000:80 -it todo:0.0.1 bash
+![tooling page](./images/tooling-page2.PNG)
+
+![tooling page](./images/tooling-page3.PNG)
+
+
+
+
+PRACTICE TASK
+Practice Task №1 – Implement a POC (Prove Of Concept) to migrate the PHP-Todo app into a containerized application.
+Download php-todo repository from here https://github.com/darey-devops/php-todo
+
+## Part 1
+
+- Goto the php-todo directory
+- Update the .env file with the database credentials
+```
+DB_HOST=mysqlserverhost
+DB_DATABASE=toolingdb
+DB_USERNAME=onyeka
+DB_PASSWORD=onyeka
+DB_CONNECTION=mysql
+DB_PORT=3306
+```
+1. Write a Dockerfile for the TODO app
+
+```
+FROM php:7.4.30-cli
+
+USER root
+WORKDIR  /var/www/html
+
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    libzip-dev \
+    libonig-dev \
+    zip \
+    curl \
+    unzip \
+    && docker-php-ext-configure gd \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install zip \
+    && docker-php-source delete
+
+COPY . .
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+ENTRYPOINT [  "bash", "start-apache.sh" ]
+```
+
+2. Run both database and app on your laptop Docker Engine
+
+```
+docker build . -t todo:0.0.1
+```
+Run the todo container
+```
+docker run --name=onyi_todo --network tooling_app_network -p=8086:80 -it todo:0.0.1 bash
+```
+
+3. Access the application from the browser
+
+
+Part 2
+Create an account in Docker Hub
+Create a new Docker Hub repository
+Push the docker images from your PC to the repository
+Part 3
+Write a Jenkinsfile that will simulate a Docker Build and a Docker Push to the registry
+Connect your repo to Jenkins
+Create a multi-branch pipeline
+Simulate a CI pipeline from a feature and master branch using previously created Jenkinsfile
+Ensure that the tagged images from your Jenkinsfile have a prefix that suggests which branch the image was pushed from. For example, feature-0.0.1.
+Verify that the images pushed from the CI can be found at the registry.
+Deployment with Docker Compose
+All we have done until now required quite a lot of effort to create an image and launch an application inside it. We should not have to always run Docker commands on the terminal to get our applications up and running. There are solutions that make it easy to write declarative code in YAML, and get all the applications and dependencies up and running with minimal effort by launching a single command.
+
+In this section, we will refactor the Tooling app POC so that we can leverage the power of Docker Compose.
+
+First, install Docker Compose on your workstation from here
+Create a file, name it tooling.yaml
+Begin to write the Docker Compose definitions with YAML syntax. The YAML file is used for defining services, networks, and volumes:
+version: "3.9"
+services:
+  tooling_frontend:
+    build: .
+    ports:
+      - "5000:80"
+    volumes:
+      - tooling_frontend:/var/www/html
+The YAML file has declarative fields, and it is vital to understand what they are used for.
+
+version: Is used to specify the version of Docker Compose API that the Docker Compose engine will connect to. This field is optional from docker compose version v1.27.0. You can verify your installed version with:
+docker-compose --version
+docker-compose version 1.28.5, build c4eb3a1f
+service: A service definition contains a configuration that is applied to each container started for that service. In the snippet above, the only service listed there is tooling_frontend. So, every other field under the tooling_frontend service will execute some commands that relate only to that service. Therefore, all the below-listed fields relate to the tooling_frontend service.
+build
+port
+volumes
+links
+You can visit the site here to find all the fields and read about each one that currently matters to you -> https://www.balena.io/docs/reference/supervisor/docker-compose/
+
+You may also go directly to the official documentation site to read about each field here -> https://docs.docker.com/compose/compose-file/compose-file-v3/
+
+Let us fill up the entire file and test our application:
+
+version: "3.9"
+services:
+  tooling_frontend:
+    build: .
+    ports:
+      - "5000:80"
+    volumes:
+      - tooling_frontend:/var/www/html
+    links:
+      - db
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: <The database name required by Tooling app >
+      MYSQL_USER: <The user required by Tooling app >
+      MYSQL_PASSWORD: <The password required by Tooling app >
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+volumes:
+  tooling_frontend:
+  db:
+Run the command to start the containers
+
+docker-compose -f tooling.yaml  up -d 
+Verify that the compose is in the running status:
+
+docker compose ls
+Practice Task №2 – Complete Continous Integration With A Test Stage
+Document your understanding of all the fields specified in the Docker Compose file tooling.yaml
+Update your Jenkinsfile with a test stage before pushing the image to the registry.
+What you will be testing here is to ensure that the tooling site http endpoint is able to return status code 200. Any other code will be determined a stage failure.
+Implement a similar pipeline for the PHP-todo app.
+Ensure that both pipelines have a clean-up stage where all the images are deleted on the Jenkins server.
