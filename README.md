@@ -60,6 +60,9 @@ docker image ls
 
 ```
 docker run --name <container_name> -e MYSQL_ROOT_PASSWORD=<my-secret-pw> -d mysql/mysql-server:latest
+
+OR
+docker run --name onyi-mysql-server -e MYSQL_ROOT_PASSWORD=12345678 -d mysql/mysql-server:latest
 ```
 
 - Replace <container_name> with the name of your choice. If you do not provide a name, Docker will generate a random one
@@ -306,7 +309,7 @@ Ensure you are inside the directory "tooling" that has the file Dockerfile and b
  $ docker build -t tooling:0.0.1 . 
 ```
 
-In the above command, we specify a parameter -t, so that the image can be tagged tooling"0.0.1 - Also, you have to notice the . at the end. This is important as that tells Docker to locate the Dockerfile in the current directory you are running the command. Otherwise, you would need to specify the absolute path to the Dockerfile.
+In the above command, we specify a parameter -t, so that the image can be tagged tooling"0.0.1 - Also, you have to notice the dot (.) at the end. This is important as that tells Docker to locate the Dockerfile in the current directory you are running the command. Otherwise, you would need to specify the absolute path to the Dockerfile.
 
 Run the container:
 
@@ -333,9 +336,15 @@ Let us observe those flags in the command.
 What I did was to start the apache2 service with the command below
 
 ```
+curl localhost
+apache2ctl status
 apache2ctl start 
+apt update 
+apt install vim nano -y
+nano /etc/apache2/envvars
+export APACHE_LYNX="text"
+service apache2 restart
 ```
-
 
 **Hint**: You must have faced this error in some of the past projects. It is time to begin to put your skills to good use. Simply do a google search of the error message, and figure out where to update the configuration file to get the error out of your way.
 
@@ -404,7 +413,7 @@ docker build . -t todo:0.0.1
 ```
 Run the todo container
 ```
-docker run --name=onyi_todo --network tooling_app_network -p=8086:80 -it todo:0.0.1 bash
+docker run --name=onyi_todo --network tooling_app_network -p=8086:80 -itd todo:0.0.1 bash
 ```
 
 3. Access the application from the browser
@@ -488,3 +497,24 @@ Update your Jenkinsfile with a test stage before pushing the image to the regist
 What you will be testing here is to ensure that the tooling site http endpoint is able to return status code 200. Any other code will be determined a stage failure.
 Implement a similar pipeline for the PHP-todo app.
 Ensure that both pipelines have a clean-up stage where all the images are deleted on the Jenkins server.
+
+## Running a docker container that can connect to the pwd of the local machine
+
+I will be running a small alpine container where I will be doing all the work from. This will enable me to have my yaml files downloaded from  to my local machine first so that I can be able to look at the files before deploying them.
+```
+docker run -it --rm --net host -v ${HOME}/.kube/:/root/.kube/ -v ${PWD}:/work -w /work alpine sh
+```
+where
+```
+--rm : removes the container when I am done
+--net host: this will enable the container to access the kind cluster
+-v ${HOME}/.kube/:/root/.kube/ : mount the .kube folder where the kubeconfig lives so that we 
+                                can communicate with the kind cluster from within the container.
+-v $[PWD]:/work : mounts my working directory which I am currently working on my local machine
+-w /work : sets the working directory in the container to /work
+```
+
+From inside the container, you should see all the files inside the pwd of your local machine. 
+```
+ls -l
+```
