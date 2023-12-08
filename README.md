@@ -183,7 +183,7 @@ If the image is not found locally, it will be downloaded from the docker registr
 Verify the container is running:
 
 ```
-docker ps -a 
+docker ps
 ```
 
 ![container running](./images/docker-container.PNG)
@@ -211,6 +211,7 @@ If you see a warning like below, it is acceptable to ignore:
 ```
 mysql: [Warning] Using a password on the command line interface can be insecure.
 ```
+
 ### Connecting to the MySQL server from a second container running the MySQL client utility
 
 The good thing about this approach is that you do not have to install any client tool on your laptop, and you do not need to connect directly to the container running the MySQL server.
@@ -306,7 +307,7 @@ docker build . -t tooling:0.0.1
 Ensure you are inside the directory "tooling" that has the file Dockerfile and build your container :
 
 ```
- $ docker build -t tooling:0.0.1 . 
+docker build -t tooling:0.0.1 . 
 ```
 
 In the above command, we specify a parameter -t, so that the image can be tagged tooling"0.0.1 - Also, you have to notice the dot (.) at the end. This is important as that tells Docker to locate the Dockerfile in the current directory you are running the command. Otherwise, you would need to specify the absolute path to the Dockerfile.
@@ -316,7 +317,7 @@ Run the container:
 ```
 docker run --name=onyi_tooling --network tooling_app_network -p=8085:80 -it tooling:0.0.1 bash
 
- OR You can connect to the container with 
+OR You can connect to the container with 
 
 docker exec -it onyi_tooling bash
 ```
@@ -357,15 +358,15 @@ If everything works, you can open the browser and type http://localhost:8085
 ![tooling page](./images/tooling-page3.PNG)
 
 
+### PRACTICE TASK
 
-
-PRACTICE TASK
 Practice Task №1 – Implement a POC (Prove Of Concept) to migrate the PHP-Todo app into a containerized application.
 Download php-todo repository from here https://github.com/darey-devops/php-todo
 
 ## Part 1
 
 - Goto the php-todo directory
+
 - Update the .env file with the database credentials
 ```
 DB_HOST=mysqlserverhost
@@ -375,13 +376,15 @@ DB_PASSWORD=onyeka
 DB_CONNECTION=mysql
 DB_PORT=3306
 ```
+
 1. Write a Dockerfile for the TODO app
 
 ```
-FROM php:7.4.30-cli
+FROM php:7.4-cli
 
 USER root
-WORKDIR  /var/www/html
+
+WORKDIR /var/www/html
 
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -399,31 +402,113 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install zip \
     && docker-php-source delete
 
-COPY . .
-
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-ENTRYPOINT [  "bash", "start-apache.sh" ]
+RUN COMPOSER_ALLOW_SUPERUSER=1
+
+COPY . .
+
+RUN composer install
+
+EXPOSE 8000
+
+ENTRYPOINT [ "bash", "start-apache.sh" ]
 ```
+
 
 2. Run both database and app on your laptop Docker Engine
 
 ```
 docker build . -t todo:0.0.1
 ```
+
 Run the todo container
 ```
-docker run --name=onyi_todo --network tooling_app_network -p=8086:80 -itd todo:0.0.1 bash
+docker run --name=onyi_todo --network tooling_app_network -p=8086:8000 -itd todo:0.0.1 bash
 ```
 
 3. Access the application from the browser
 
+### Error
 
-Part 2
+![todo web error](./images/todo-web-error.PNG)
+
+The above error is as a result of .env file in the Laravel project directory has no correct settings for encryption. Specifically, the APP_KEY variable, which is used for encryption is not there. It should be a 32-character string.
+
+I notice that the command ENTRYPOINT [ "bash", "start-apache.sh" ] in the dockerfile is not running the start-apache.sh because it was complaining that the format of the file is in windows format, so I had exec into the container and run all the commands in that script. Especially php artisan key:generate. This command will generate a new application key and update your .env file.
+
+But to have a permanent and better solution I had to introduce some commands in the dockerfile that has to convert the start-apache.sh file into a linux format so that it can run the bash script. Therefore our dokerfile looks like the bellow
+
+```
+FROM php:7.4-cli
+
+USER root
+
+WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    libzip-dev \
+    libonig-dev \
+    zip \
+    curl \
+    unzip \
+    && docker-php-ext-configure gd \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install zip \
+    && docker-php-source delete
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN COMPOSER_ALLOW_SUPERUSER=1
+
+COPY . .
+
+RUN composer install
+
+RUN tr -d '\r' < start-apache.sh > start-apache-unix.sh
+
+RUN mv start-apache-unix.sh start-apache.sh
+
+RUN chmod 777 start-apache.sh
+
+EXPOSE 8000
+
+ENTRYPOINT [ "bash", "start-apache.sh" ]
+```
+
+```
+php artisan key:generate
+composer install  --no-interaction
+php artisan migrate
+cat .env
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan serve  --host=0.0.0.0
+lsof
+cat /etc/os-release
+curl localhost:8000
+```
+
+![todo web page](./images/todo-web-page.PNG)
+
+![todo web page](./images/todo-web-page2.PNG)
+
+
+### Part 2
 Create an account in Docker Hub
+
 Create a new Docker Hub repository
+
 Push the docker images from your PC to the repository
-Part 3
+
+### Part 3
+
 Write a Jenkinsfile that will simulate a Docker Build and a Docker Push to the registry
 Connect your repo to Jenkins
 Create a multi-branch pipeline
@@ -504,6 +589,7 @@ I will be running a small alpine container where I will be doing all the work fr
 ```
 docker run -it --rm --net host -v ${HOME}/.kube/:/root/.kube/ -v ${PWD}:/work -w /work alpine sh
 ```
+
 where
 ```
 --rm : removes the container when I am done
