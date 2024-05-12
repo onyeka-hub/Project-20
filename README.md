@@ -328,7 +328,9 @@ Let us observe those flags in the command.
 - The -p flag is used to map the container port with the host port. Within the container, apache is the webserver running and, by default, it listens on port 80. You can confirm this with the CMD ["start-apache"] section of the Dockerfile. But we cannot directly use port 80 on our host machine because it is already in use. The workaround is to use another port that is not used by the host machine. In our case, port 8085 is free, so we can map that to port 80 running in the container.
 - --name flag is the name of our container
 
-**Note**: You will get an error. But you must troubleshoot this error and fix it. Below is your error message.
+**Note**: You will get an error. But you must troubleshoot this error and fix it. Below is your error message. 
+
+**Hint**: You must have faced this error in some of the past projects. It is time to begin to put your skills to good use. Simply do a google search of the error message, and figure out where to update the configuration file to get the error out of your way.
 
 ### Blocker
 
@@ -337,17 +339,16 @@ Let us observe those flags in the command.
 What I did was to start the apache2 service with the command below
 
 ```
-curl localhost
-apache2ctl status
 apache2ctl start 
+apache2ctl status
+curl localhost
+
 apt update 
 apt install vim nano -y
 nano /etc/apache2/envvars
 export APACHE_LYNX="text"
 service apache2 restart
 ```
-
-**Hint**: You must have faced this error in some of the past projects. It is time to begin to put your skills to good use. Simply do a google search of the error message, and figure out where to update the configuration file to get the error out of your way.
 
 If everything works, you can open the browser and type http://localhost:8085
 
