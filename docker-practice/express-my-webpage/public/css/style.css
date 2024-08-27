@@ -1,0 +1,155 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    padding: 40px 0;
+    text-align: center;
+    position: relative;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 3em;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    margin: 0 15px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #ff7e5f;
+}
+
+section {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+#biography {
+    background: #fff;
+    padding: 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-radius: 10px;
+}
+
+#biography img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+#biography p {
+    max-width: 800px;
+    margin: auto;
+    font-size: 1.1em;
+    color: #555;
+}
+
+#social {
+    margin-top: 20px;
+}
+
+#social a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #1e3c72;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+#social a:hover {
+    color: #ff7e5f;
+}
+
+#projects, #case-studies, #certifications, #open-source, #contact {
+    background: #fff;
+    padding: 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.project, .case-study, .certification, .open-source-contribution {
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 2.5em;
+    color: #2a5298;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h3 {
+    font-size: 1.5em;
+    color: #1e3c72;
+    margin-bottom: 10px;
+}
+
+.project p, .case-study p, .certification p, .open-source-contribution p {
+    font-size: 1.1em;
+    color: #555;
+}
+
+form {
+    max-width: 600px;
+    margin: auto;
+}
+
+input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1.1em;
+}
+
+button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    color: #fff;
+    border: none;
+    padding: 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f);
+}
+
+footer {
+    background: #1e3c72;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+}
+
+footer p {
+    margin: 0;
+    font-size: 1em;
+}

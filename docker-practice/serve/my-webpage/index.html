@@ -162,7 +162,7 @@
             I am a seasoned DevOps Engineer with three years of experience in designing, implementing, and managing scalable 
 and resilient cloud infrastructure. My expertise spans across CI/CD pipelines, infrastructure automation, and 
 continuous monitoring using industry-leading tools. Proficient in scripting languages like Bash, containerization technologies
-like Linux, Jenkins, GitHub Actions, Git, Docker and Kubernetes, and cloud platforms like AWS. I have a combination of hard and
+like Linux, Jenkins, github Actions, Git, Docker and Kubernetes, and cloud platforms like AWS. I have a combination of hard and
 soft skills like imaginative thinking, problem-solving, etc. I’m passionate about improving development workflows
 and operational efficiency.
         </p>
@@ -207,16 +207,16 @@ and operational efficiency.
             <h3>DevOps Transformation for a Legacy Application</h3>
             <p>
                 Migrated a monolithic application to a microservices-based architecture. Introduced CI/CD, automated testing, and infrastructure as code.
-                <br><strong>Process:</strong> Assessed the current state, planned and executed the transformation. Educated the team on best practices and tools.
-                <br><strong>Results:</strong> Reduced deployment times by 60% and improved application performance by 30%.
+                <br><strong>Process:</strong> Assessed the current state, planned and executed the transformation. Handled data migration, continuous deployment in a complex environment, and staff training.
+                <br><strong>Results:</strong> Improved deployment speed, enhanced system reliability, and facilitated faster feedback loops.
             </p>
         </div>
         <div class="case-study">
-            <h3>Cloud Cost Optimization</h3>
+            <h3>High Availability and Disaster Recovery Setup</h3>
             <p>
-                Conducted a cloud cost analysis and implemented cost-saving measures across multiple AWS accounts. Automated scaling policies and rightsized resources.
-                <br><strong>Process:</strong> Analyzed usage patterns, identified inefficiencies, and applied best practices for cost management.
-                <br><strong>Results:</strong> Achieved 35% cost savings without impacting performance.
+                Designed and implemented a high availability and disaster recovery plan for a critical application.
+                <br><strong>Process:</strong> Developed multi-region deployments, load balancing, and failover strategies.
+                <br><strong>Results:</strong> Achieved a recovery time objective (RTO) of under 5 minutes and a recovery point objective (RPO) of near zero.
             </p>
         </div>
     </section>
@@ -224,49 +224,51 @@ and operational efficiency.
     <section id="certifications">
         <h2>Certifications</h2>
         <div class="certification">
-            <h3>AWS Certified Solutions Architect – Associate</h3>
-            <p>Validated expertise in designing and deploying scalable, highly available, and fault-tolerant systems on AWS.</p>
+            <h3>AWS Certified DevOps Engineer - Professional</h3>
+            <p>
+                Demonstrates expertise in provisioning, operating, and managing distributed application systems on the AWS platform.
+            </p>
         </div>
         <div class="certification">
             <h3>Certified Kubernetes Administrator (CKA)</h3>
-            <p>Proved knowledge in administrating Kubernetes clusters, deploying applications, and managing cluster resources.</p>
+            <p>
+                Validates the skills required to be a successful Kubernetes administrator in industry and enterprise settings.
+            </p>
         </div>
         <div class="certification">
             <h3>HashiCorp Certified: Terraform Associate</h3>
-            <p>Demonstrated proficiency in infrastructure as code concepts, Terraform workflows, and cloud infrastructure management.</p>
+            <p>
+                Proves knowledge of core Terraform concepts, how to manage infrastructure as code, and best practices in cloud architecture.
+            </p>
         </div>
     </section>
 
     <section id="open-source">
         <h2>Open Source Contributions</h2>
         <div class="open-source-contribution">
-            <h3>GitHub Action for Terraform</h3>
-            <p>Contributed to an open-source GitHub Action for automating Terraform workflows in CI/CD pipelines.</p>
+            <h3>Jenkins Pipeline Library</h3>
+            <p>
+                Developed a shared Jenkins pipeline library used across multiple projects to standardize CI/CD processes.
+                <br><strong>Link:</strong> <a href="https://github.com/yourusername/jenkins-pipeline-library" target="_blank">GitHub Repository</a>
+            </p>
         </div>
         <div class="open-source-contribution">
-            <h3>Kubernetes Dashboard Enhancements</h3>
-            <p>Submitted improvements to the Kubernetes Dashboard project, enhancing usability and functionality.</p>
+            <h3>Terraform Modules</h3>
+            <p>
+                Developed reusable Terraform modules for cloud infrastructure automation.
+                <br><strong>Link:</strong> <a href="https://github.com/yourusername/terraform-modules" target="_blank">GitHub Repository</a>
+            </p>
         </div>
     </section>
 
     <section id="contact">
         <h2>Contact Me</h2>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+        <form action="your-contact-form-handler-url" method="post">
             <input type="text" name="name" placeholder="Your Name" required>
             <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
             <button type="submit">Send Message</button>
         </form>
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $name = htmlspecialchars($_POST['name']);
-            $email = htmlspecialchars($_POST['email']);
-            $message = htmlspecialchars($_POST['message']);
-            // For the sake of this example, we'll just echo the values.
-            // In a real-world scenario, you might send this information via email or store it in a database.
-            echo "<p>Thank you, $name. Your message has been received.</p>";
-        }
-        ?>
     </section>
 
     <footer>

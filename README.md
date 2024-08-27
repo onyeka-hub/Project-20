@@ -1,6 +1,6 @@
 # PROJECT 20
 
-## MIGRATION TO THE СLOUD WITH CONTAINERIZATION. PART 1 – DOCKER &AMP; DOCKER COMPOSE
+## MIGRATION TO THE СLOUD WITH CONTAINERIZATION. PART 1 – DOCKER AND DOCKER COMPOSE
 
 Until now, you have been using VMs (AWS EC2) in Amazon Virtual Private Cloud (AWS VPC) to deploy your web solutions, and it works well in many cases. You have learned how easy to spin up and configure a new EC2 manually or with such tools as Terraform and Ansible to automate provisioning and configuration. You have also deployed two different websites on the same VM; this approach is scalable, but to some extent; imagine what if you need to deploy many small applications (it can be web front-end, web-backend, processing jobs, monitoring, logging solutions, etc.) and some of the applications will require various OS and runtimes of different versions and conflicting dependencies – in such case you would need to spin up serves for each group of applications with the exact OS/runtime/dependencies requirements. When it scales out to tens/hundreds and even thousands of applications (e.g., when we talk of microservice architecture), this approach becomes very tedious and challenging to maintain.
 
@@ -201,7 +201,7 @@ FLUSH PRIVILEGES;
 ```
 
 Run the script:
-Ensure you are in the directory create_user.sql file is located or declare a path
+Ensure you are in the directory where create_user.sql file is located or declare a path
 
 ```
 docker exec -i onyi-mysql-server mysql -uroot -p12345678 < create_user.sql 
@@ -362,9 +362,37 @@ If everything works, you can open the browser and type http://localhost:8085
 ### PRACTICE TASK
 
 Practice Task №1 – Implement a POC (Prove Of Concept) to migrate the PHP-Todo app into a containerized application.
-Download php-todo repository from here https://github.com/darey-devops/php-todo
+Download php-todo repository from [here](https://github.com/onyeka-hub/php-todo.git)
 
 ## Part 1
+
+- Create a new database
+```
+docker run --network tooling_app_network -h mysqlserverhost --name=onyi-mysql-server -e MYSQL_ROOT_PASSWORD=12345678  -d mysql/mysql-server:latest 
+```
+
+Our application needs to connect to the database. Therefore, we will create an SQL script that will create a user that our application can use to connect remotely.
+
+Create a file and name it **create_user.sql** and add the below code in the file:
+
+```
+CREATE USER 'onyeka'@'%' IDENTIFIED WITH mysql_native_password BY 'onyeka';
+GRANT ALL PRIVILEGES ON * . * TO 'onyeka'@'%';
+FLUSH PRIVILEGES;
+```
+
+Run the script:
+Ensure you are in the directory where create_user.sql file is located or declare a path
+
+```
+docker exec -i onyi-mysql-server mysql -uroot -p12345678 < create_user.sql 
+```
+
+Exec into the database container or connect using mysql client container and create a database named **toolingdb**
+```
+docker run --network tooling_app_network --name mysql-client -it --rm mysql mysql -h mysqlserverhost -uonyeka -p 
+create database tooling;
+```
 
 - Goto the php-todo directory
 

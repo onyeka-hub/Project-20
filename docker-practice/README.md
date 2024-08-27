@@ -1,4 +1,4 @@
--- Build a File Server Image --
+## Build a File Server Image 
 
 We build our first Docker image with a custom Dockerfile. This image used serve.js, a node.js module used to serve file directories, and static html pages. Below are the steps we used to create the serve image.
 
@@ -12,10 +12,10 @@ We build our first Docker image with a custom Dockerfile. This image used serve.
 
 
 
--- Build an express.js Image --
+## Build an express.js Image 
 
-We built a new image, using express.js to build a containerized web server.
-After reating the "express" repository, build and run the container, and view it:
+We built a new image, using express.js to build a containerized web server. After reating the "express" repository, build and run the container, and view it:
+
 - `docker build . -t docker/express`
 - `docker run --name=express -d -p 3002:80 docker/express`
 - Go to http://localhost:3002
@@ -23,11 +23,10 @@ After reating the "express" repository, build and run the container, and view it
 While building the express container, we covered a few important concepts. Here are some extra notes:
 - In order to make the container accessible, we hosted it on ‘0.0.0.0’, allow external connections.
 - We also used the recommended exec form for the CMD option of the Dockerfile:
+
 	CMD [“node”, “server.js”]
 
-
-
--- Build a PHP Image --
+## Build a PHP Image
 
 In this project, we built a php Docker image.
 We also learn about the importance of the `EXPOSE 80` line in the Dockerfile.
@@ -36,13 +35,11 @@ It allows developers to look at the Dockerfile as documentation and understand e
 
 The completed project is at the end of this note.
 After cloning the project, build and run the container:
-- $ docker build . -t docker/php
-- $ docker run --name=php -p=3003:80 docker/php
+- `docker build . -t docker/php`
+- `docker run --name=php -p=3003:80 docker/php`
 - Visit http://localhost:3003
 
-
-
--- Build a Python Flask Image --
+## Build a Python Flask Image --
 
 In this video, we build a Python Flask Image.
 We also saw how the `WORKDIR` option in the Dockerfile can allow us to set a working directory for the container.
@@ -50,18 +47,19 @@ This ensures that following commands like `COPY` or `CMD` are set in the context
 
 The completed project is at the end of this note.
 After cloning the project, build and run the container:
-- $ docker build . -t docker/flask
-- $ docker run --name=flask -p=3004:80 docker/flask
+- `docker build . -t docker/flask`
+- `docker run --name=flask -p=3004:80 docker/flask`
 
--- Compose a Two-Container App - Part One --
+
+## Compose a Two-Container App - Part One 
 
 We started building our first multi-container application with Docker Compose, with a node container first of all, and soon, a php container. In this project, we set up the Node side of the project. We also created a docker-compose.yml file in order to configure the project.
 
 Note that we haven’t done the php portion of the project yet, which we’ll go through in the next project:
 
 After completeing the files: Docker-compose.yml, server.js, package.json and Dockerfile
-
-Docker-compose.yml file
+```yaml
+# Docker-compose.yml file
 version: '3'
 
 services:
@@ -69,8 +67,10 @@ services:
     build: ./players
     ports:
       - 5002:80
+```
 
-server.js file
+```json
+// server.js file
 const express = require('express');
 const app = express();
 const HOST = '0.0.0.0';
@@ -91,8 +91,10 @@ package.json file
         "express": "^4.16.1"
     }
 }
+```
 
-Dockerfile
+```dockerfile
+# Dockerfile
 # Specify a base image
 FROM node
 
@@ -106,16 +108,17 @@ EXPOSE 80
 
 # Set up a default command
 CMD ["node", "server.js"]
-
+```
 
 Go to the command line and because we want to use the docker compose, do
 
+```sh
 docker compose --help
 
 docker compose up
+```
 
-
--- Compose a Two-Container App - Part Two --
+## Compose a Two-Container App - Part Two
 
 We completed our first multi-container application with Docker Compose. After building the node container first, we added the php container next.
 
@@ -126,7 +129,8 @@ Create a directory call 'site' in the root node-php directory
 
 Create two files in this directory: index.php and Dockerfile
 
-index.php
+```php
+// index.php
 <html>
   <body>
     <h1>Team names:</h1>
@@ -139,28 +143,31 @@ index.php
     </ul>
   </body>
 </html>
+```
 
+```dockerfile
 Dockerfile
 FROM php
 COPY index.php .
 EXPOSE 80
 CMD ["php", "-S", "0.0.0.0:80"]
+```
 
 Update the Docker-compose.yml with under the ports section
+```yaml
 site:
     build: ./site
     ports:
       - 5000:80
     depends_on:
       - players
+```
 
 After cloning the project, run:
 `docker-compose up`
 
 If you need to update an image, launch docker-compose using the `--build` option:
 `docker-compose up --build`
-
-
 
 The completed project is at this repo:
 
